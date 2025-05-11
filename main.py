@@ -5,6 +5,7 @@ from embeddings import get_embedding
 from llm import call_llm
 import os
 from dotenv import load_dotenv
+import uvicorn
 
 load_dotenv()
 
@@ -14,7 +15,7 @@ app = FastAPI()
 # MongoDB connection
 MONGO_URI = os.getenv("MONGODB_URI")
 client = MongoClient(MONGO_URI)
-collection = client["jc-dev"]["PubMedCancerData"]  # Update with your actual DB and collection
+collection = client["data"]["pubmed-rag"] 
 
 # Request model
 class QueryRequest(BaseModel):
@@ -46,3 +47,7 @@ async def query_trials(payload: QueryRequest):
         return {"answer": answer}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
+
